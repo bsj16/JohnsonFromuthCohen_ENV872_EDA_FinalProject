@@ -50,11 +50,11 @@ Bikes.2021.sf <- Bikes.2021 %>%
 #Get key
 census_api_key('111339232f4137ed330544649d9c1c65d82c047c', `install=TRUE`)
 
-census.data <-read.csv("../JohnsonFromuthCohen_ENV872_EDA_FinalProject/Data/boston_census.csv")
 
 #Get ACS variables 
 v20 <- load_variables(2020, "acs5", cache = TRUE)
 View(v20)
+
 
 #census tract data for income
 ma_suffolk.income <- get_acs(
@@ -98,7 +98,6 @@ ma_suffolk.race.1 <- mutate(ma_suffolk.race.1, perwhite = white/totpop,
 ```
 
 ```{r}
-
 #Turn into shapefile 
 suffolk.race.sf <- ma_suffolk.race.1 %>% 
   st_as_sf(coords = c('geometry'),
@@ -107,12 +106,20 @@ suffolk.race.sf <- ma_suffolk.race.1 %>%
 suffolk.income.sf <- ma_suffolk.income %>% 
   st_as_sf(coords = c('geometry'),
            crs=4269)
+```
 
+
+```{r}
+#Bikes only in Suffolk county
+bikes.suffolk <- Bikes.2021.sf[ma_suffolk.income,]
+
+bikes.suffolk.sf <- bikes.suffolk %>% 
+  st_as_sf(coords = c('geometry'),
+           crs=4269)
 
 ```
 
 ```{r}
-
 #map percent white
 ggplot(suffolk.race.sf) + geom_sf(aes(fill=perwhite))
 
@@ -128,13 +135,33 @@ ggplot() + geom_sf(data=suffolk.income.sf, aes(fill=estimate)) + geom_sf(data=Bi
 
 
 #Race and bike stations
-ggplot() + geom_sf(data=suffolk.race.sf, aes(fill=perwhite)) + geom_sf(data=Bikes.2021.sf, aes(color="white", alpha = 0.4))
+ggplot() + geom_sf(data=suffolk.race.sf, aes(fill=perwhite)) + geom_sf(data=bikes.suffolk, aes(color=Total_docks, alpha = 0.7)) 
 
 
-mapview(suffolk.income.sf, zcol = 'estimate') 
-
+ggplot() + geom_sf(data=suffolk.race.sf, aes(fill=perblack)) + geom_sf(data=bikes.suffolk, aes(color=Total_docks)) 
 ```
 
+```{r}
+#Joining bike data and census tract data
+
+suffolk.join <- st_join(x = suffolk.income.sf, y = bikes.suffolk.sf, 
+                               join = st_intersects)
+
+suffolk.join.sf <- suffolk.join %>% 
+  st_as_sf(coords = c('geometry'),
+           crs=4269)
+
+mapview(suffolk.join.sf)
+```
+
+```{r}
+#Number of docks and stations per census tract. Can run regression see correlations. NA is zero 
+Bikes.Census <- suffolk.join %>%
+  group_by(NAME, estimate, GEOID) %>%
+  summarise(BikeDocks = sum(Total_docks),
+            NumStations = length(unique(Number)))
+
+```
 
 
 
