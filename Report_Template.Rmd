@@ -79,6 +79,7 @@ ma_suffolk.income <- get_acs(
 
 # Dataset Information
 
+Data from the American Community Survey and the City of Boston were used in this analysis. The American Community Survey data was obtained from the U.S. Census Bureau 
 
 
 \newpage
