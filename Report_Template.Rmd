@@ -1,0 +1,111 @@
+---
+output: 
+  pdf_document:
+    keep_tex: yes
+    fig_caption: yes
+    number_sections: yes
+geometry: margin=2.54cm
+title: "Insert title of project here"
+subtitle: "Web address for GitHub repository"
+author: "Name"
+fontsize: 12pt
+mainfont: Times New Roman
+
+---
+
+\newpage
+\tableofcontents 
+\newpage
+\listoftables 
+\newpage
+\listoffigures 
+\newpage
+
+```{r setup, include=FALSE}
+# Set your working directory
+
+# Load your packages
+#install.packages("rgdal")
+#install.packages("tidycensus")
+#install.packages("uuid")
+
+library(tidycensus)
+library(rgdal)
+library(uuid)
+library(dplyr)
+library(ggplot2)
+options(tigris_use_cache = TRUE)
+library(sf)
+library(tigris)
+library(leaflet)
+library(mapview)
+# Set your ggplot theme
+
+mytheme <- theme_classic(base_size = 14) +
+  theme(axis.text = element_text(color = "black"), 
+        legend.position = "top")
+theme_set(mytheme)
+
+# Load your datasets
+Bikes.2021 <- read.csv("./Data/Blue_Bike_Stations_2021.csv", stringsAsFactors = TRUE)
+
+census_api_key('111339232f4137ed330544649d9c1c65d82c047c', `install=TRUE`)
+
+#census.data <-read.csv("boston_census.csv")
+
+#Get ACS variables 
+v20 <- load_variables(2020, "acs5", cache = TRUE)
+#View(v20)
+
+#census tract data for income
+ma_suffolk.income <- get_acs(
+  geography = "tract", 
+  variables = c(medIncome= "B19013_001" 
+                ),  
+  state = "MA", 
+  geometry = TRUE,
+  year = 2020,
+  county = "Suffolk"
+)
+
+```
+
+
+# Rationale and Research Questions
+
+
+
+\newpage
+
+# Dataset Information
+
+
+
+\newpage
+
+# Exploratory Analysis 
+
+
+
+\newpage
+
+# Analysis
+
+
+
+## Question 1: <insert specific question here and add additional subsections for additional questions below, if needed>
+
+## Question 2: 
+
+
+
+
+\newpage
+
+# Summary and Conclusions
+
+
+\newpage
+
+# References
+<add references here if relevant, otherwise delete this section> 
